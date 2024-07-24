@@ -31,6 +31,7 @@ export class ToDoService {
   private error$ = new Subject<string | null>();
   private loadedToDos$ = this.fetchToDos();
   add$ = new Subject<AddToDo>();
+  delete$ = new Subject<ToDoId>();
   toggleComplete$ = new Subject<ToDoId>();
 
   constructor() {
@@ -58,6 +59,14 @@ export class ToDoService {
         const newToDos = state.toDos.map((toDo) =>
           toDo.id === id ? { ...toDo, completed: !toDo.completed } : toDo
         );
+        const newState = { ...state, toDos: newToDos };
+        return this.updateCounts(newState);
+      });
+    });
+
+    this.delete$.pipe(takeUntilDestroyed()).subscribe((id) => {
+      this.state.update((state) => {
+        const newToDos = state.toDos.filter((toDo) => toDo.id !== id);
         const newState = { ...state, toDos: newToDos };
         return this.updateCounts(newState);
       });

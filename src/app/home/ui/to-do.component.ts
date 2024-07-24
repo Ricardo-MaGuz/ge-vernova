@@ -5,6 +5,8 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { ToDoFormComponent } from './to-do-form.component';
 import { ToDoService } from '../data-access/to-do.service';
+import { DialogComponent } from '../../shared/ui/dialog.component';
+import { MatDialog } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-to-do',
@@ -15,6 +17,7 @@ import { ToDoService } from '../data-access/to-do.service';
     MatButtonModule,
     MatDividerModule,
     ToDoFormComponent,
+    DialogComponent,
   ],
   template: `
     <div class="to-do">
@@ -48,6 +51,7 @@ import { ToDoService } from '../data-access/to-do.service';
   }`,
 })
 export class ToDoComponent {
+  readonly dialog = inject(MatDialog);
   toDoService = inject(ToDoService);
   id = input.required<number>();
   status = input.required<boolean>();
@@ -55,5 +59,24 @@ export class ToDoComponent {
 
   toggleComplete(id: number) {
     this.toDoService.toggleComplete$.next(id);
+  }
+
+  deleteToDo(id: number, name: string) {
+    const dialogRef = this.dialog.open(DialogComponent, {
+      data: {
+        dialogTitle: 'Delete To Do',
+        template: '',
+        id: id,
+        dialogDescription: `Are you sure to delete: ${name}?`,
+        cancelButton: 'Cancel',
+        confirmButton: 'Delete To Do',
+      },
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result !== undefined) {
+        this.toDoService.delete$.next(id);
+      }
+    });
   }
 }
