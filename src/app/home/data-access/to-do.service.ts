@@ -4,11 +4,11 @@ import { ToDo, ToDoListResponse } from '../models/to-do';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError } from 'rxjs/operators';
 import { EMPTY, Subject } from 'rxjs';
-
-export interface ToDosState {}
 export interface ToDosState {
   toDos: ToDo[];
   loading: boolean;
+  completedToDos: number;
+  activeToDos: number;
 }
 @Injectable({
   providedIn: 'root',
@@ -19,10 +19,14 @@ export class ToDoService {
   private state = signal<ToDosState>({
     toDos: [],
     loading: true,
+    completedToDos: 0,
+    activeToDos: 0,
   });
 
   toDos = computed(() => this.state().toDos);
   loading = computed(() => this.state().loading);
+  completedToDos = computed(() => this.state().completedToDos);
+  activetoDos = computed(() => this.state().activeToDos);
 
   private error$ = new Subject<string | null>();
   private loadedToDos$ = this.fetchToDos();

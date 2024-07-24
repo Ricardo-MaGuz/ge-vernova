@@ -17,7 +17,11 @@ import { ToDoTabsComponent } from './ui/to-do-tabs.component';
       } @else {
       <p>What needs to be done?</p>
       <app-to-do-form [formGroup]="toDoForm" />
-      <app-to-do-tabs [toDos]="toDoService.toDos()" />
+      <app-to-do-tabs
+        [toDos]="toDoService.toDos()"
+        [completedToDos]="toDoService.completedToDos()"
+        [activeToDos]="toDoService.activetoDos()"
+      />
       }
     </main>
   `,

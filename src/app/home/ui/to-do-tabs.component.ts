@@ -20,12 +20,18 @@ import { ToDo } from '../models/to-do';
       }
     </mat-tab>
     <mat-tab label="Active">
-      <h2 class="mat-title-medium">Active Tasks</h2>
-      <app-to-do [id]="1" [status]="true" [name]="'name'" />
+      <h2 class="mat-title-medium">{{ activeToDos() }} Active Tasks</h2>
+      @for(toDo of toDos(); track toDo.id){ @if(!toDo.completed){<app-to-do
+        [id]="toDo.id"
+        [status]="toDo.completed"
+        [name]="toDo.todo"
+      />} }
     </mat-tab>
     <mat-tab label="Completed"
-      ><h2 class="mat-title-medium">Tasks Completed</h2>
-      <app-to-do [id]="1" [status]="true" [name]="'name'" />
+      ><h2 class="mat-title-medium">{{ completedToDos() }} Tasks Completed</h2>
+      @for(toDo of toDos(); track toDo.id){ @if(toDo.completed){
+      <app-to-do [id]="toDo.id" [status]="toDo.completed" [name]="toDo.todo" />}
+      }
     </mat-tab>
   </mat-tab-group>`,
   styles: `.mat-title-medium{margin-top:1em}
@@ -33,4 +39,6 @@ import { ToDo } from '../models/to-do';
 })
 export class ToDoTabsComponent {
   toDos = input.required<ToDo[]>();
+  completedToDos = input.required<number>();
+  activeToDos = input.required<number>();
 }
