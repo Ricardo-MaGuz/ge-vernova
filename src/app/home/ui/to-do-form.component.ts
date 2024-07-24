@@ -1,4 +1,4 @@
-import { Component, ElementRef, input, output, ViewChild } from '@angular/core';
+import { Component, input, output } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -55,12 +55,4 @@ export class ToDoFormComponent {
   placeholder = input.required<string>();
   toDoName = input<string>();
   submitForm = output();
-
-  @ViewChild('form', { static: false }) form!: ElementRef<HTMLFormElement>;
-
-  submit(): void {
-    this.form.nativeElement.dispatchEvent(
-      new Event('submit', { cancelable: true, bubbles: true })
-    );
-  }
 }

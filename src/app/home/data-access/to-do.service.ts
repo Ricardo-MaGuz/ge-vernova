@@ -2,7 +2,13 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AddToDo, ToDo, ToDoId, ToDoListResponse } from '../models/to-do';
+import {
+  AddToDo,
+  EditToDo,
+  ToDo,
+  ToDoId,
+  ToDoListResponse,
+} from '../models/to-do';
 
 import { EMPTY, Subject } from 'rxjs';
 export interface ToDosState {
@@ -32,6 +38,7 @@ export class ToDoService {
   private loadedToDos$ = this.fetchToDos();
   add$ = new Subject<AddToDo>();
   delete$ = new Subject<ToDoId>();
+  edit$ = new Subject<EditToDo>();
   toggleComplete$ = new Subject<ToDoId>();
 
   constructor() {
@@ -71,6 +78,15 @@ export class ToDoService {
         return this.updateCounts(newState);
       });
     });
+
+    this.edit$.pipe(takeUntilDestroyed()).subscribe((update) =>
+      this.state.update((state) => ({
+        ...state,
+        toDos: state.toDos.map((toDo) =>
+          toDo.id === update.id ? { ...toDo, todo: update.data.todo } : toDo
+        ),
+      }))
+    );
   }
 
   private handleError(err: HttpErrorResponse) {
