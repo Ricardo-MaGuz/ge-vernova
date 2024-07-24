@@ -2,7 +2,7 @@ import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { catchError } from 'rxjs/operators';
 import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
-import { AddToDo, ToDo, ToDoListResponse } from '../models/to-do';
+import { AddToDo, ToDo, ToDoId, ToDoListResponse } from '../models/to-do';
 
 import { EMPTY, Subject } from 'rxjs';
 export interface ToDosState {
@@ -31,6 +31,7 @@ export class ToDoService {
   private error$ = new Subject<string | null>();
   private loadedToDos$ = this.fetchToDos();
   add$ = new Subject<AddToDo>();
+  toggleComplete$ = new Subject<ToDoId>();
 
   constructor() {
     //reducers
@@ -47,6 +48,16 @@ export class ToDoService {
     this.add$.pipe(takeUntilDestroyed()).subscribe((toDo) => {
       this.state.update((state) => {
         const newToDos = [this.addToDoId(toDo), ...state.toDos];
+        const newState = { ...state, toDos: newToDos };
+        return this.updateCounts(newState);
+      });
+    });
+
+    this.toggleComplete$.pipe(takeUntilDestroyed()).subscribe((id) => {
+      this.state.update((state) => {
+        const newToDos = state.toDos.map((toDo) =>
+          toDo.id === id ? { ...toDo, completed: !toDo.completed } : toDo
+        );
         const newState = { ...state, toDos: newToDos };
         return this.updateCounts(newState);
       });

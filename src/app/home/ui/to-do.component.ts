@@ -1,9 +1,10 @@
-import { Component, input } from '@angular/core';
+import { Component, inject, input } from '@angular/core';
 import { MatButtonModule } from '@angular/material/button';
 import { MatCheckboxModule } from '@angular/material/checkbox';
 import { MatIconModule } from '@angular/material/icon';
 import { MatDividerModule } from '@angular/material/divider';
 import { ToDoFormComponent } from './to-do-form.component';
+import { ToDoService } from '../data-access/to-do.service';
 
 @Component({
   selector: 'app-to-do',
@@ -17,7 +18,11 @@ import { ToDoFormComponent } from './to-do-form.component';
   ],
   template: `
     <div class="to-do">
-      <mat-checkbox [checked]="status()" class="checkbox">
+      <mat-checkbox
+        [checked]="status()"
+        (click)="toggleComplete(id())"
+        class="checkbox"
+      >
         {{ name() }}
       </mat-checkbox>
       <div class="actions">
@@ -43,7 +48,12 @@ import { ToDoFormComponent } from './to-do-form.component';
   }`,
 })
 export class ToDoComponent {
+  toDoService = inject(ToDoService);
   id = input.required<number>();
   status = input.required<boolean>();
   name = input.required<string>();
+
+  toggleComplete(id: number) {
+    this.toDoService.toggleComplete$.next(id);
+  }
 }
