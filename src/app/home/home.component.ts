@@ -1,10 +1,12 @@
-import { Component } from '@angular/core';
+import { Component, inject } from '@angular/core';
+import { ToDoFormComponent } from './ui/to-do-form.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [MatProgressSpinnerModule],
+  imports: [MatProgressSpinnerModule, ToDoFormComponent],
   template: `
     <main class="wrapper">
       <h1>ToDoMatic</h1>
@@ -12,6 +14,7 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
       <mat-progress-spinner mode="indeterminate" diameter="50" />
       } @else {
       <p>What needs to be done?</p>
+      <app-to-do-form [formGroup]="toDoForm" />
       }
     </main>
   `,
@@ -32,4 +35,10 @@ import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
       }
   }`,
 })
-export default class HomeComponent {}
+export default class HomeComponent {
+  fb = inject(FormBuilder);
+  toDoForm = this.fb.nonNullable.group({
+    todo: ['', [Validators.required, Validators.minLength(3)]],
+    completed: [false],
+  });
+}
