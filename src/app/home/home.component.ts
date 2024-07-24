@@ -1,12 +1,13 @@
 import { Component, inject } from '@angular/core';
 import { ToDoFormComponent } from './ui/to-do-form.component';
+import { ToDoTabsComponent } from './ui/to-do-tabs.component';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
   standalone: true,
-  imports: [MatProgressSpinnerModule, ToDoFormComponent],
+  imports: [MatProgressSpinnerModule, ToDoFormComponent, ToDoTabsComponent],
   template: `
     <main class="wrapper">
       <h1>ToDoMatic</h1>
@@ -15,6 +16,7 @@ import { FormBuilder, Validators } from '@angular/forms';
       } @else {
       <p>What needs to be done?</p>
       <app-to-do-form [formGroup]="toDoForm" />
+      <app-to-do-tabs />
       }
     </main>
   `,
