@@ -1,8 +1,9 @@
 import { Component, inject } from '@angular/core';
+import { FormBuilder, Validators } from '@angular/forms';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { ToDoService } from './data-access/to-do.service';
 import { ToDoFormComponent } from './ui/to-do-form.component';
 import { ToDoTabsComponent } from './ui/to-do-tabs.component';
-import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
-import { FormBuilder, Validators } from '@angular/forms';
 
 @Component({
   selector: 'app-home',
@@ -16,7 +17,7 @@ import { FormBuilder, Validators } from '@angular/forms';
       } @else {
       <p>What needs to be done?</p>
       <app-to-do-form [formGroup]="toDoForm" />
-      <app-to-do-tabs />
+      <app-to-do-tabs [toDos]="toDoService.toDos()" />
       }
     </main>
   `,
@@ -38,6 +39,7 @@ import { FormBuilder, Validators } from '@angular/forms';
   }`,
 })
 export default class HomeComponent {
+  toDoService = inject(ToDoService);
   fb = inject(FormBuilder);
   toDoForm = this.fb.nonNullable.group({
     todo: ['', [Validators.required, Validators.minLength(3)]],

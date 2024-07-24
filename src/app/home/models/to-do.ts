@@ -11,3 +11,6 @@ export interface ToDo {
   completed: boolean;
   userId: number;
 }
+export type AddToDo = Omit<ToDo, 'id' | 'userId' | 'completed'>;
+export type EditToDo = { id: ToDo['id']; data: AddToDo };
+export type DeleteToDo = ToDo['id'];

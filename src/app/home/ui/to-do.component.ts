@@ -17,8 +17,8 @@ import { ToDoFormComponent } from './to-do-form.component';
   ],
   template: `
     <div class="to-do">
-      <mat-checkbox [checked]="true" class="checkbox">
-        To Do Name
+      <mat-checkbox [checked]="status()" class="checkbox">
+        {{ name() }}
       </mat-checkbox>
       <div class="actions">
         <button mat-icon-button aria-label="Edit to Do">
