@@ -32,7 +32,11 @@ import { MatDialog } from '@angular/material/dialog';
         <button mat-icon-button aria-label="Edit to Do">
           <mat-icon>edit</mat-icon>
         </button>
-        <button mat-icon-button aria-label="Delete to Do">
+        <button
+          mat-icon-button
+          aria-label="Delete to Do"
+          (click)="deleteToDo(id(), name())"
+        >
           <mat-icon>delete</mat-icon>
         </button>
       </div>
