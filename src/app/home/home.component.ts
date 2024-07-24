@@ -16,7 +16,14 @@ import { ToDoTabsComponent } from './ui/to-do-tabs.component';
       <mat-progress-spinner mode="indeterminate" diameter="50" />
       } @else {
       <p>What needs to be done?</p>
-      <app-to-do-form [formGroup]="toDoForm" />
+      <app-to-do-form
+        [formGroup]="toDoForm"
+        [formType]="formType"
+        [placeholder]="'Add To Do'"
+        (submitForm)="
+          toDoService.add$.next(toDoForm.getRawValue()); toDoForm.reset()
+        "
+      />
       <app-to-do-tabs
         [toDos]="toDoService.toDos()"
         [completedToDos]="toDoService.completedToDos()"
@@ -49,4 +56,5 @@ export default class HomeComponent {
     todo: ['', [Validators.required, Validators.minLength(3)]],
     completed: [false],
   });
+  formType = 'add';
 }

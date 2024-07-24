@@ -1,4 +1,4 @@
-import { Component, input } from '@angular/core';
+import { Component, ElementRef, input, output, ViewChild } from '@angular/core';
 import { FormsModule, ReactiveFormsModule, FormGroup } from '@angular/forms';
 import { MatInputModule } from '@angular/material/input';
 import { MatFormFieldModule } from '@angular/material/form-field';
@@ -16,9 +16,18 @@ import { MatButtonModule } from '@angular/material/button';
     MatIconModule,
     MatButtonModule,
   ],
-  template: `<form [formGroup]="formGroup()">
+  template: `<form
+    [formGroup]="formGroup()"
+    (ngSubmit)="submitForm.emit(); formGroup().reset()"
+  >
     <mat-form-field class="input accent-button">
-      <input type="text" matInput formControlName="todo" />
+      <input
+        type="text"
+        matInput
+        [placeholder]="placeholder()"
+        formControlName="todo"
+      />
+      @if(formType() === 'add'){
       <button
         matSuffix
         mat-icon-button
@@ -28,9 +37,11 @@ import { MatButtonModule } from '@angular/material/button';
       >
         <mat-icon>add</mat-icon>
       </button>
-      @if (formGroup().controls['todo'].hasError('minLength') ||
+      } @if (formGroup().controls['todo'].hasError('minLength') ||
       !formGroup().controls['todo'].hasError('required')) {
-      <mat-error>Please ener more than <strong>3 characters</strong></mat-error>
+      <mat-error
+        >Please enter more than <strong>3 characters</strong></mat-error
+      >
       } @if (formGroup().controls['todo'].hasError('required')) {
       <mat-error>A to do is <strong>required</strong></mat-error>
       }
@@ -40,4 +51,16 @@ import { MatButtonModule } from '@angular/material/button';
 })
 export class ToDoFormComponent {
   formGroup = input.required<FormGroup>();
+  formType = input.required<string>();
+  placeholder = input.required<string>();
+  toDoName = input<string>();
+  submitForm = output();
+
+  @ViewChild('form', { static: false }) form!: ElementRef<HTMLFormElement>;
+
+  submit(): void {
+    this.form.nativeElement.dispatchEvent(
+      new Event('submit', { cancelable: true, bubbles: true })
+    );
+  }
 }

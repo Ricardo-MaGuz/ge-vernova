@@ -1,8 +1,9 @@
 import { computed, inject, Injectable, signal } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { ToDo, ToDoListResponse } from '../models/to-do';
-import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
 import { catchError } from 'rxjs/operators';
+import { takeUntilDestroyed } from '@angular/core/rxjs-interop';
+import { AddToDo, ToDo, ToDoListResponse } from '../models/to-do';
+
 import { EMPTY, Subject } from 'rxjs';
 export interface ToDosState {
   toDos: ToDo[];
@@ -15,7 +16,6 @@ export interface ToDosState {
 })
 export class ToDoService {
   private http = inject(HttpClient);
-
   private state = signal<ToDosState>({
     toDos: [],
     loading: true,
@@ -30,6 +30,7 @@ export class ToDoService {
 
   private error$ = new Subject<string | null>();
   private loadedToDos$ = this.fetchToDos();
+  add$ = new Subject<AddToDo>();
 
   constructor() {
     //reducers
@@ -42,6 +43,14 @@ export class ToDoService {
         loading: false,
       }))
     );
+
+    this.add$.pipe(takeUntilDestroyed()).subscribe((toDo) => {
+      this.state.update((state) => {
+        const newToDos = [this.addToDoId(toDo), ...state.toDos];
+        const newState = { ...state, toDos: newToDos };
+        return this.updateCounts(newState);
+      });
+    });
   }
 
   private handleError(err: HttpErrorResponse) {
@@ -58,5 +67,33 @@ export class ToDoService {
         return EMPTY;
       })
     );
+  }
+
+  private addToDoId(toDo: AddToDo) {
+    return {
+      ...toDo,
+      id: this.generateId(),
+      userId: this.generateUserId(),
+      completed: false,
+    };
+  }
+
+  private generateId() {
+    return this.toDos().length + 1;
+  }
+
+  private generateUserId() {
+    return Math.floor(Math.random() * 10000) + 1;
+  }
+
+  updateCounts(state: ToDosState) {
+    const completedToDos = state.toDos.filter((toDo) => toDo.completed).length;
+    const activeToDos = state.toDos.filter((toDo) => !toDo.completed).length;
+
+    return {
+      ...state,
+      completedToDos,
+      activeToDos,
+    };
   }
 }
